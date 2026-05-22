@@ -37,14 +37,44 @@ const LOGO_SVGS = [
 let currentGroupIdx = 0;
 const CYCLE_INTERVAL = 4000; // Time in ms between each full slide sequence (2.5s hold + 1.5s transition delay)
 
-// Initialize: load Group 0 SVGs and display them instantly sharp
+// List of progressive chromatic aberration intensities corresponding to each transition cycle
+const ABERRATION_CLASSES = ['aberration-subtle', 'aberration-moderate', 'aberration-intense'];
+
+// Helper function to build 3 layered absolute channels (R, G, B) to enable chromatic aberration
+function createLogoElement(svgString, stateClass, aberrationClass = 'aberration-subtle') {
+    const logoContainer = document.createElement('div');
+    logoContainer.className = `logo ${stateClass} ${aberrationClass}`;
+
+    // 1. Red Channel Layer
+    const rChannel = document.createElement('div');
+    rChannel.className = 'logo-channel r-channel';
+    rChannel.innerHTML = svgString;
+
+    // 2. Green Channel Layer
+    const gChannel = document.createElement('div');
+    gChannel.className = 'logo-channel g-channel';
+    gChannel.innerHTML = svgString;
+
+    // 3. Blue Channel Layer
+    const bChannel = document.createElement('div');
+    bChannel.className = 'logo-channel b-channel';
+    bChannel.innerHTML = svgString;
+
+    // Layer all channels inside the main container
+    logoContainer.appendChild(rChannel);
+    logoContainer.appendChild(gChannel);
+    logoContainer.appendChild(bChannel);
+
+    return logoContainer;
+}
+
+// Initialize: load Group 0 SVGs as 3-channel overlays and display them instantly sharp
 function init() {
     for (let colIdx = 0; colIdx < 4; colIdx++) {
         const slot = document.getElementById(`slot-${colIdx}`);
-        const logoDiv = document.createElement('div');
-        logoDiv.className = 'logo active';
-        logoDiv.innerHTML = LOGO_SVGS[currentGroupIdx * 4 + colIdx];
-        slot.appendChild(logoDiv);
+        const svgString = LOGO_SVGS[currentGroupIdx * 4 + colIdx];
+        const logoEl = createLogoElement(svgString, 'active', 'aberration-subtle');
+        slot.appendChild(logoEl);
     }
     
     // Cycle sets indefinitely
@@ -53,26 +83,27 @@ function init() {
 
 function triggerNextTransition() {
     const nextGroupIdx = (currentGroupIdx + 1) % 3;
+    
+    // Select the current loop's aberration intensity style dynamically
+    const activeAberrationClass = ABERRATION_CLASSES[currentGroupIdx];
 
     for (let colIdx = 0; colIdx < 4; colIdx++) {
         const slot = document.getElementById(`slot-${colIdx}`);
         
-        // 1. Get the current active logo and flag it to start blurring, fading, and sliding top-right
+        // 1. Get the current active logo and flag it to exit with the specific aberration class
         const oldLogo = slot.querySelector('.logo.active');
         if (oldLogo) {
-            oldLogo.classList.remove('active');
-            oldLogo.classList.add('exit');
+            oldLogo.className = `logo exit ${activeAberrationClass}`;
             
-            // Clean up the expired element once the staggered CSS transition completes (approx 2.2 seconds max delay + duration)
+            // Clean up the expired element once the staggered CSS transition completes (approx 2.5 seconds max delay + duration)
             setTimeout(() => {
                 oldLogo.remove();
             }, 2500);
         }
 
-        // 2. Create the incoming logo, set it to invisible (.enter state), and append it
-        const newLogo = document.createElement('div');
-        newLogo.className = 'logo enter';
-        newLogo.innerHTML = LOGO_SVGS[nextGroupIdx * 4 + colIdx];
+        // 2. Create the incoming 3-channel logo, set it to invisible (.enter state), and append it
+        const svgString = LOGO_SVGS[nextGroupIdx * 4 + colIdx];
+        const newLogo = createLogoElement(svgString, `enter ${activeAberrationClass}`);
         slot.appendChild(newLogo);
 
         // 3. Trigger the staggered fade-in transition in the next render cycle

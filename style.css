@@ -5,7 +5,7 @@
 }
 
 body {
-    background-color: #000000; /* Pure black cinematic background */
+    background-color: #000000; /* Pure cinematic pitch black */
     height: 100vh;
     width: 100vw;
     display: flex;
@@ -26,9 +26,9 @@ main {
 .logo-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 3rem;
+    gap: 3.5rem;
     width: 100%;
-    max-width: 1050px;
+    max-width: 1100px;
     align-items: center;
     justify-content: center;
 }
@@ -44,7 +44,7 @@ main {
     overflow: visible; /* Allow blur and slide offsets to go outside box boundaries */
 }
 
-/* Base logo wrapper element styles */
+/* Logo container containing the 3 layered color channels */
 .logo {
     position: absolute;
     top: 0;
@@ -55,86 +55,168 @@ main {
     align-items: center;
     justify-content: center;
     
-    /* Hardware acceleration optimization for ultra-smooth 60+ FPS transitions */
-    will-change: transform, opacity, filter;
+    will-change: opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* --- Additive Color Channel Overlay Layers --- */
+.logo-channel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Layer blending: screen/plus-lighter combines Red + Green + Blue to form White */
+    mix-blend-mode: screen;
+    mix-blend-mode: plus-lighter; 
+    
+    will-change: transform, filter;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     
-    /* Smooth premium easing curve matching the video's acceleration and deceleration */
+    /* Hardware-accelerated smooth transitions */
     transition: 
         filter 1.2s cubic-bezier(0.25, 1, 0.5, 1),
-        opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1),
         transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* Inline SVG styles inside logo wrappers */
-.logo svg {
+/* Inline SVG configurations */
+.logo-channel svg {
     width: 100%;
     height: 100%;
-    max-width: 160px; /* Restrict width so logos don't scale too large */
-    max-height: 70px; /* Restrict height for premium balanced grid */
+    max-width: 160px;
+    max-height: 70px;
 }
 
-.logo path,
-.logo text {
-    fill: #ffffff !important; /* Force all paths and text to render in white */
-}
+/* --- RGB Channel Coloring Rules --- */
+
+/* 1. Red Channel (#ff0000) */
+.r-channel svg *:not([fill="none"]) { fill: #ff0000 !important; }
+.r-channel svg *[stroke="#FFFFFF"],
+.r-channel svg *[stroke="#ffffff"] { stroke: #ff0000 !important; }
+
+/* 2. Green Channel (#00ff00) */
+.g-channel svg *:not([fill="none"]) { fill: #00ff00 !important; }
+.g-channel svg *[stroke="#FFFFFF"],
+.g-channel svg *[stroke="#ffffff"] { stroke: #00ff00 !important; }
+
+/* 3. Blue Channel (#0000ff) */
+.b-channel svg *:not([fill="none"]) { fill: #0000ff !important; }
+.b-channel svg *[stroke="#FFFFFF"],
+.b-channel svg *[stroke="#ffffff"] { stroke: #0000ff !important; }
 
 
-/* --- Transition State Classes --- */
+/* --- Dynamic Refractive Transition States --- */
 
-/* 1. Enter state: Completely hidden, centered, prepared to fade in */
+/* --- ENTER (Fading In & Stacking Together) --- */
 .logo.enter {
     opacity: 0;
-    filter: blur(0px);
-    transform: translate(0, 0);
-    transition: none !important; /* Force instant reset without transition delay */
+    transition: none !important; /* Instant hide */
 }
 
-/* 2. Active state: Sharp, fully visible, locked in center */
+/* 1. Subtle Enter */
+.logo.enter.aberration-subtle .r-channel { transform: translate(5px, -5px); filter: blur(3px); transition: none !important; }
+.logo.enter.aberration-subtle .g-channel { transform: translate(2px, -2px); filter: blur(2px); transition: none !important; }
+.logo.enter.aberration-subtle .b-channel { transform: translate(-1px, 1px); filter: blur(1px); transition: none !important; }
+
+/* 2. Moderate Enter */
+.logo.enter.aberration-moderate .r-channel { transform: translate(10px, -10px); filter: blur(4px); transition: none !important; }
+.logo.enter.aberration-moderate .g-channel { transform: translate(5px, -5px); filter: blur(3px); transition: none !important; }
+.logo.enter.aberration-moderate .b-channel { transform: translate(-3px, 3px); filter: blur(2px); transition: none !important; }
+
+/* 3. Intense Enter */
+.logo.enter.aberration-intense .r-channel { transform: translate(15px, -15px); filter: blur(6px); transition: none !important; }
+.logo.enter.aberration-intense .g-channel { transform: translate(8px, -8px); filter: blur(4px); transition: none !important; }
+.logo.enter.aberration-intense .b-channel { transform: translate(-5px, 5px); filter: blur(3px); transition: none !important; }
+
+
+/* --- ACTIVE (Perfect Alignment -> Sharp White Logo) --- */
 .logo.active {
     opacity: 1;
-    filter: blur(0px);
+    transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.logo.active .logo-channel {
     transform: translate(0, 0);
+    filter: blur(0px);
     
-    /* Inward fade timing (quick and snappy) */
+    /* Slightly faster recovery transition */
     transition: 
         filter 0.8s cubic-bezier(0.25, 1, 0.5, 1),
-        opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* 3. Exit state: Heavily blurred, dissolved opacity, slid to top-right */
+
+/* --- EXIT (Refractive Dispersion Slide to Top-Right) --- */
 .logo.exit {
     opacity: 0;
-    filter: blur(28px); /* High-level digital blur */
-    transform: translate(45px, -45px); /* Clean, elegant translation to top-right */
+    transition: opacity 1.3s cubic-bezier(0.25, 1, 0.5, 1);
     pointer-events: none;
 }
 
-/* --- Left-to-Right Cascading Stagger Delay Timing (Exactly like the video!) --- */
+/* 1. Subtle Exit (微弱 - Low profile pink/cyan fringe) */
+.logo.exit.aberration-subtle .r-channel { transform: translate(16px, -16px); filter: blur(14px); }
+.logo.exit.aberration-subtle .g-channel { transform: translate(10px, -10px); filter: blur(10px); }
+.logo.exit.aberration-subtle .b-channel { transform: translate(4px, -4px); filter: blur(6px); }
 
-/* Outgoing cascade delays */
+/* 2. Moderate Exit (中等 - Balanced optical refraction) */
+.logo.exit.aberration-moderate .r-channel { transform: translate(40px, -40px); filter: blur(22px); }
+.logo.exit.aberration-moderate .g-channel { transform: translate(26px, -26px); filter: blur(15px); }
+.logo.exit.aberration-moderate .b-channel { transform: translate(12px, -12px); filter: blur(9px); }
+
+/* 3. Intense Exit (強烈 - Bold refractive chromatic aberration) */
+.logo.exit.aberration-intense .r-channel { transform: translate(75px, -75px); filter: blur(32px); }
+.logo.exit.aberration-intense .g-channel { transform: translate(50px, -50px); filter: blur(20px); }
+.logo.exit.aberration-intense .b-channel { transform: translate(25px, -25px); filter: blur(12px); }
+
+
+/* --- Left-to-Right Cascading Stagger Delay Timing --- */
+
+/* Exit cascade delays */
 #slot-0 .logo.exit { transition-delay: 0.0s; }
 #slot-1 .logo.exit { transition-delay: 0.18s; }
 #slot-2 .logo.exit { transition-delay: 0.36s; }
 #slot-3 .logo.exit { transition-delay: 0.54s; }
 
-/* Incoming cascade delays (staggered to enter beautifully as the old ones blur away) */
+#slot-0 .logo.exit .logo-channel { transition-delay: 0.0s; }
+#slot-1 .logo.exit .logo-channel { transition-delay: 0.18s; }
+#slot-2 .logo.exit .logo-channel { transition-delay: 0.36s; }
+#slot-3 .logo.exit .logo-channel { transition-delay: 0.54s; }
+
+/* Entrance cascade delays */
 #slot-0 .logo.active { transition-delay: 0.8s; }
 #slot-1 .logo.active { transition-delay: 0.98s; }
 #slot-2 .logo.active { transition-delay: 1.16s; }
 #slot-3 .logo.active { transition-delay: 1.34s; }
+
+#slot-0 .logo.active .logo-channel { transition-delay: 0.8s; }
+#slot-1 .logo.active .logo-channel { transition-delay: 0.98s; }
+#slot-2 .logo.active .logo-channel { transition-delay: 1.16s; }
+#slot-3 .logo.active .logo-channel { transition-delay: 1.34s; }
+
 
 /* Responsive adjustments for mobile and tablets */
 @media (max-width: 768px) {
     .logo-grid {
         gap: 1.5rem;
     }
-    .logo svg {
+    .logo-channel svg {
         max-height: 45px;
     }
-    .logo.exit {
-        filter: blur(18px);
-        transform: translate(30px, -30px);
-    }
+    /* Reduced mobile exit displacements */
+    .logo.exit.aberration-subtle .r-channel { transform: translate(12px, -12px); filter: blur(8px); }
+    .logo.exit.aberration-subtle .g-channel { transform: translate(8px, -8px); filter: blur(6px); }
+    .logo.exit.aberration-subtle .b-channel { transform: translate(4px, -4px); filter: blur(4px); }
+    
+    .logo.exit.aberration-moderate .r-channel { transform: translate(30px, -30px); filter: blur(14px); }
+    .logo.exit.aberration-moderate .g-channel { transform: translate(20px, -20px); filter: blur(10px); }
+    .logo.exit.aberration-moderate .b-channel { transform: translate(10px, -10px); filter: blur(6px); }
+    
+    .logo.exit.aberration-intense .r-channel { transform: translate(50px, -50px); filter: blur(18px); }
+    .logo.exit.aberration-intense .g-channel { transform: translate(35px, -35px); filter: blur(12px); }
+    .logo.exit.aberration-intense .b-channel { transform: translate(20px, -20px); filter: blur(8px); }
 }
