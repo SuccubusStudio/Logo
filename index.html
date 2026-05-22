@@ -3,107 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Logo Pixel-Dispersion Transition</title>
+    <title>Logo Staggered Blur & Translation Transition</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <h1>Logo 像素粒子擴散動畫</h1>
-        <p class="subtitle">HTML5 Canvas & 物理粒子系統 • 重現數位雜訊像素化消散與重組效果</p>
-    </header>
-
     <main>
-        <div class="canvas-container">
-            <canvas id="logoCanvas"></canvas>
+        <div class="logo-grid" id="logoGrid">
+            <!-- 4 Slots for the Logos -->
+            <div class="logo-slot" id="slot-0"></div>
+            <div class="logo-slot" id="slot-1"></div>
+            <div class="logo-slot" id="slot-2"></div>
+            <div class="logo-slot" id="slot-3"></div>
         </div>
     </main>
-
-    <div class="controls-panel" id="controlsPanel">
-        <div class="panel-header" id="panelHeader">
-            <div class="panel-title">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                參數控制面板
-            </div>
-            <button class="toggle-btn" id="toggleBtn" title="展開/收起">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </button>
-        </div>
-
-        <div class="control-grid">
-            <!-- Parameter: Particle Size -->
-            <div class="control-group">
-                <div class="control-label-wrapper">
-                    <label for="particleSize">像素粒子大小 (px)</label>
-                    <span class="value-display" id="particleSizeVal">4px</span>
-                </div>
-                <input type="range" id="particleSize" min="2" max="10" step="1" value="4">
-            </div>
-
-            <!-- Parameter: Stagger Delay -->
-            <div class="control-group">
-                <div class="control-label-wrapper">
-                    <label for="staggerDelay">Logo 輪播節奏 (錯開毫秒)</label>
-                    <span class="value-display" id="staggerDelayVal">250ms</span>
-                </div>
-                <input type="range" id="staggerDelay" min="0" max="600" step="50" value="250">
-            </div>
-
-            <!-- Parameter: Transition Duration -->
-            <div class="control-group">
-                <div class="control-label-wrapper">
-                    <label for="transDuration">消散/重組時間 (秒)</label>
-                    <span class="value-display" id="transDurationVal">1.2s</span>
-                </div>
-                <input type="range" id="transDuration" min="0.5" max="3.0" step="0.1" value="1.2">
-            </div>
-
-            <!-- Parameter: Cycle Interval -->
-            <div class="control-group">
-                <div class="control-label-wrapper">
-                    <label for="cycleInterval">停留展示時間 (秒)</label>
-                    <span class="value-display" id="cycleIntervalVal">3.0s</span>
-                </div>
-                <input type="range" id="cycleInterval" min="1.0" max="8.0" step="0.5" value="3.0">
-            </div>
-
-            <!-- Parameter: Dispersion Force -->
-            <div class="control-group">
-                <div class="control-label-wrapper">
-                    <label for="scatterForce">消散擴散力道</label>
-                    <span class="value-display" id="scatterForceVal">4.0</span>
-                </div>
-                <input type="range" id="scatterForce" min="1.0" max="8.0" step="0.5" value="4.0">
-            </div>
-
-            <!-- Parameter: Animation Style -->
-            <div class="control-group">
-                <div class="control-label-wrapper">
-                    <label for="noiseIntensity">雜訊干擾強度</label>
-                    <span class="value-display" id="noiseIntensityVal">3.0</span>
-                </div>
-                <input type="range" id="noiseIntensity" min="0.0" max="8.0" step="0.5" value="3.0">
-            </div>
-        </div>
-
-        <div class="button-row">
-            <div class="presets-container">
-                <span>效果預設套用:</span>
-                <button class="btn active" id="presetVideo">重現影片效果</button>
-                <button class="btn" id="presetGlitch">數位像素顆粒</button>
-                <button class="btn" id="presetDust">微細沙塵</button>
-            </div>
-            
-            <div style="display: flex; gap: 0.75rem;">
-                <button class="btn" id="pauseBtn">
-                    <span id="pauseBtnText">暫停輪播</span>
-                </button>
-                <button class="btn primary" id="nextBtn">
-                    立即觸行動畫
-                </button>
-            </div>
-        </div>
-    </div>
 
     <script src="app.js"></script>
 </body>
